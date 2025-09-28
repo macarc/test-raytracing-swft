@@ -50,7 +50,7 @@ let pipelineState = try! device.makeComputePipelineState(function: fn)
 commandEncoder.setComputePipelineState(pipelineState)
 
 // ======================================================================
-// Create the output of the shader pipeline - buffer of int32s
+// Create the output of the shader pipeline - buffer of OutputType
 // ======================================================================
 
 let outArray: Array<OutputType> = Array.init(repeating: 0, count: rayCount)
@@ -58,20 +58,20 @@ let outBuffer = device.makeBuffer(bytes: outArray, length: MemoryLayout<OutputTy
 commandEncoder.setBuffer(outBuffer, offset: 0, index: 0)
 
 // ======================================================================
-// Create the input to the shader pipleline - single MTLAccelerationStructure
+// Create the input to the shader pipeline - single MTLAccelerationStructure
 // ======================================================================
 
 print("building geometry")
 
 // Geometry creation:
-// - Create an Acceleration Descriptor
+// 1. Create an Acceleration Descriptor
 //  - Descriptor contains one or more Geometry Descriptors
-// - Allocate the Acceleration Structure
-// - Build the Acceleration Structure
+// 2. Allocate the Acceleration Structure
+// 3. Build the Acceleration Structure
 
 // Step 1. Create the acceleration descriptor
 
-// Geometry descriptor
+// Geometry descriptors hold triangle data
 var geometryDescriptors: [MTLAccelerationStructureGeometryDescriptor] = []
 
 for _ in 0..<triangleCount {
@@ -88,7 +88,7 @@ for _ in 0..<triangleCount {
     geometryDescriptors.append(triangleDescriptor)
 }
 
-// Acceleration descriptor
+// Acceleration descriptor contains geometry descriptors
 let accelerationDescriptor = MTLPrimitiveAccelerationStructureDescriptor()
 accelerationDescriptor.geometryDescriptors = geometryDescriptors
 
@@ -96,22 +96,26 @@ accelerationDescriptor.geometryDescriptors = geometryDescriptors
 
 let sizes: MTLAccelerationStructureSizes = device.accelerationStructureSizes(descriptor: accelerationDescriptor)
 
+// Create a heap to hold the acceleration structure
 let heapAllocationSize: MTLSizeAndAlign = device.heapAccelerationStructureSizeAndAlign(size: sizes.accelerationStructureSize)
 let heapDescriptor = MTLHeapDescriptor()
 heapDescriptor.size = heapAllocationSize.size
-
 let heap = device.makeHeap(descriptor: heapDescriptor)!
-let accelerationStructure = heap.makeAccelerationStructure(size: heapAllocationSize.size)!
-
 commandEncoder.useHeap(heap)
 
+// Allocate acceleration structure and scratch buffer
+let accelerationStructure = heap.makeAccelerationStructure(size: heapAllocationSize.size)!
 let scratchBuffer = device.makeBuffer(length: sizes.buildScratchBufferSize, options: .storageModePrivate)!
 
 // Step 3. Build the acceleration structure
+
+// Create a command encoder and encode the build command
 let accelerationCommandBuffer = queue.makeCommandBuffer()!
 let accelerationCommandEncoder = accelerationCommandBuffer.makeAccelerationStructureCommandEncoder()!
 accelerationCommandEncoder.useHeap(heap)
 accelerationCommandEncoder.build(accelerationStructure: accelerationStructure, descriptor: accelerationDescriptor, scratchBuffer: scratchBuffer, scratchBufferOffset: 0)
+
+// Run the build command
 accelerationCommandEncoder.endEncoding()
 accelerationCommandBuffer.commit()
 accelerationCommandBuffer.waitUntilCompleted()

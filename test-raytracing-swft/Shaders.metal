@@ -13,6 +13,7 @@ using namespace raytracing;
 #define reflection_count (20000)
 
 // This is a common, but not very good, random function.
+// The returned value is between -1 and 1.
 float rand(int x){
     return 2.0f * fract(sin(x * 12.9898) * 43758.5453) - 1.0f;
 }
@@ -38,6 +39,7 @@ void ray_trace_to_triangle(device float* out [[ buffer(0) ]],
     
     intersection_result<triangle_data> intersection_res;
     
+    // Intersect the ray with the geometry, reflection_count times
     for (int n = 0; n < reflection_count; ++n) {
          intersection_res = i.intersect(ray, accelerationStructure);
     }
