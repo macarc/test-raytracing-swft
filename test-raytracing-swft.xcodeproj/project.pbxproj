@@ -19,6 +19,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		11165E162E8974BF008E5852 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		117CE8BD2E883D3D0004CED8 /* test-raytracing-swft */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-raytracing-swft"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -44,6 +45,7 @@
 		117CE8B42E883D3D0004CED8 = {
 			isa = PBXGroup;
 			children = (
+				11165E162E8974BF008E5852 /* README.md */,
 				117CE8BF2E883D3D0004CED8 /* test-raytracing-swft */,
 				117CE8BE2E883D3D0004CED8 /* Products */,
 			);
@@ -249,6 +251,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				MTL_COMPILER_FLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
@@ -258,6 +261,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				MTL_COMPILER_FLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
